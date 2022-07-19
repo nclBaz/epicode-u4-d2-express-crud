@@ -72,7 +72,17 @@ usersRouter.get("/", (req, res) => {
 
 // 3. READ (single user) --> GET http://localhost:3001/users/:userId
 usersRouter.get("/:userId", (req, res) => {
-  res.send({ message: "Hello I am the GET SINGLE USER endpoint!" })
+  // 1. Obtain the User Id from the URL
+  const userID = req.params.userId
+
+  // 2. Read the file --> obtaining an array
+  const usersArray = JSON.parse(fs.readFileSync(usersJSONPath))
+
+  // 3. Find the specific user in the array
+  const foundUser = usersArray.find(user => user.id === userID)
+  // 4. Send back a proper response
+
+  res.send(foundUser)
 })
 
 // 4. UPDATE (single user) --> PUT http://localhost:3001/users/:userId (+body)

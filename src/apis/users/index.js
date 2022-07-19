@@ -92,7 +92,17 @@ usersRouter.put("/:userId", (req, res) => {
 
 // 5. DELETE (single user) --> DELETE http://localhost:3001/users/:userId
 usersRouter.delete("/:userId", (req, res) => {
-  res.send({ message: "Hello I am the DELETE endpoint!" })
+  // 1. Read the file obtaining an array
+  const usersArray = JSON.parse(fs.readFileSync(usersJSONPath))
+
+  // 2. Filter out the specified user from the array, keeping just the array of the remaining users
+  const remainingUsers = usersArray.filter(user => user.id !== req.params.userId)
+
+  // 3. Save the array of remaining users back on disk
+  fs.writeFileSync(usersJSONPath, JSON.stringify(remainingUsers))
+
+  // 4. Send a proper response
+  res.status(204).send()
 })
 
 export default usersRouter // do not forget to export it!

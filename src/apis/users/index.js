@@ -87,7 +87,20 @@ usersRouter.get("/:userId", (req, res) => {
 
 // 4. UPDATE (single user) --> PUT http://localhost:3001/users/:userId (+body)
 usersRouter.put("/:userId", (req, res) => {
-  res.send({ message: "Hello I am the UPDATE endpoint!" })
+  // 1. Read the file obtaining an array
+  const usersArray = JSON.parse(fs.readFileSync(usersJSONPath))
+
+  // 2. Modify the specified user by merging previous properties with new properties coming from request body
+  const index = usersArray.findIndex(user => user.id === req.params.userId)
+  const oldUser = usersArray[index]
+  const updatedUser = { ...oldUser, ...req.body, updatedAt: new Date() }
+  usersArray[index] = updatedUser
+
+  // 3. Save the modified array back on disk
+  fs.writeFileSync(usersJSONPath, JSON.stringify(usersArray))
+
+  // 4. Send back a proper response
+  res.send(updatedUser)
 })
 
 // 5. DELETE (single user) --> DELETE http://localhost:3001/users/:userId
